@@ -22,19 +22,37 @@ const refs = {
 /* =============== #PLOT ======================= */
 
 export function addNewDreamHandler() {
-  console.log("addNewDreamHandler");
-  const root = document.querySelector(".dreams");
-  refs.dreams.insertAdjacentHTML(
-    "afterbegin",
+  const lastDreamClass = refs.dreams.querySelector("figure:last-child");
+  console.log(lastDreamClass);
+  lastDreamClass.insertAdjacentHTML(
+    "beforebegin",
     `<figure class="card dream-2">
       <div class="card-img-wrapper">
         <img src="./images/programming.jpg" 
           class="card-img" 
         />
       </div>
+      <figcaption class="card-description"><input type="text"></figcaption>
     </figure>`
   );
-  console.log(refs.dreams.outerHTML);
+  const input = refs.dreams.querySelector("input");
+  input.onkeydown = inputHandler;
+}
+
+export function inputHandler(event) {
+  console.log(event);
+  const { target: input } = event;
+  const inputValue = input.value;
+  if (event.key === "Enter") {
+    input.insertAdjacentHTML(
+      "beforebegin",
+      `<figcaption> ${input.value}</ figcaption>`
+    );
+    input.remove();
+  }
+  if (event.key === "Escape") {
+    input.parentNode.parentNode.remove();
+  }
 }
 
 function showPlot(array) {
@@ -98,10 +116,10 @@ function showDreams(root, array) {
   var list = array
     .map(
       (e, i) => `
-  <figure class="card dream-${i + 1}">
+  <figure class="card dream-2">
     <div class="card-img-wrapper">
       <img src="./images/${e.src}" 
-           alt="${e.alt}" 
+           alt="${e.alt}"
            class="card-img" 
       />
     </div>
