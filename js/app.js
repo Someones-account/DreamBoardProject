@@ -40,13 +40,15 @@ export function addNewDreamHandler() {
 }
 
 export function inputHandler(event) {
-  console.log(event);
   const { target: input } = event;
   const inputValue = input.value;
   if (event.key === "Enter") {
+    const currentDreams = JSON.parse(localStorage.getItem("dreams")) || [];
+    const jsonItem = JSON.stringify([...currentDreams, inputValue]);
+    localStorage.setItem("dreams", jsonItem);
     input.insertAdjacentHTML(
       "beforebegin",
-      `<figcaption> ${input.value}</ figcaption>`
+      `<figcaption> ${inputValue}</ figcaption>`
     );
     input.remove();
   }
@@ -112,18 +114,18 @@ const stringHTML3 = `<p>
 </p>`;
 
 function showDreams(root, array) {
-  console.log("showDreams");
-  var list = array
+  var previousRecords = JSON.parse(localStorage.getItem("dreams")) || [];
+  var formatedPreviousRecords = previousRecords
     .map(
-      (e, i) => `
+      (e) => `
   <figure class="card dream-2">
     <div class="card-img-wrapper">
-      <img src="./images/${e.src}" 
-           alt="${e.alt}"
+      <img src="./images/programming.jpg" 
+           alt="${e}"
            class="card-img" 
       />
     </div>
-    <figcaption class="card-description">${e.alt}</figcaption>
+    <figcaption class="card-description">${e}</figcaption>
   </figure>
   `
     )
@@ -138,7 +140,7 @@ function showDreams(root, array) {
     </div>
     <figcaption class="card-description">Добавить</figcaption>
   </figure>`;
-  root.insertAdjacentHTML("afterbegin", list + btn);
+  root.insertAdjacentHTML("afterbegin", formatedPreviousRecords + btn);
   const button = root.querySelector("button");
   button.onclick = addNewDreamHandler;
 }
