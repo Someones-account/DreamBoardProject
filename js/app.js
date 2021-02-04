@@ -23,21 +23,24 @@ const refs = {
 
 function addNewDreamHandler() {
   const lastDreamClass = refs.dreams.querySelector("figure:last-child");
-  console.log(lastDreamClass);
-  lastDreamClass.insertAdjacentHTML(
-    "beforebegin",
-    `<figure class="card dream-2">
-      <button class="button-reset">Reset</button>
-      <div class="card-img-wrapper">
-        <img src="./images/programming.jpg" 
-          class="card-img" 
-        />
-      </div>
-      <figcaption class="card-description"><input type="text"></figcaption>
-    </figure>`
-  );
-  const input = refs.dreams.querySelector("input");
-  input.onkeydown = inputHandler;
+  if (refs.dreams.querySelector("input")) {
+    return null;
+  } else {
+    lastDreamClass.insertAdjacentHTML(
+      "beforebegin",
+      `<figure class="card dream-2">
+        <button class="button-reset">Delete</button>
+        <div class="card-img-wrapper">
+          <img src="./images/programming.jpg" 
+            class="card-img" 
+          />
+        </div>
+        <figcaption class="card-description"><input type="text"></figcaption>
+      </figure>`
+    );
+    const input = refs.dreams.querySelector("input");
+    input.onkeydown = inputHandler;
+  }
 }
 
 function deleteDream(event, index) {
@@ -135,7 +138,7 @@ function showDreams(root, array) {
     .map(
       (e) => `
   <figure class="card dream-2">
-    <button class="button-reset">Reset</button>
+    <button class="button-reset">Delete</button>
     <div class="card-img-wrapper">
       <img src="./images/programming.jpg" 
            alt="${e}"
@@ -190,6 +193,11 @@ function showTODO(ref, array) {
 
 function run() {
   refs.plot1.insertAdjacentHTML("afterbegin", stringHTML1);
+  refs.plot1.insertAdjacentHTML(
+    "beforeend",
+    `<button>
+   </button>`
+  );
   refs.plot2.insertAdjacentHTML("afterbegin", stringHTML2);
   refs.plot3.insertAdjacentHTML("afterbegin", stringHTML3);
   showPerson(refs, user);
