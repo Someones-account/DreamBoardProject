@@ -21,12 +21,13 @@ const refs = {
 
 /* =============== #PLOT ======================= */
 
-export function addNewDreamHandler() {
+function addNewDreamHandler() {
   const lastDreamClass = refs.dreams.querySelector("figure:last-child");
   console.log(lastDreamClass);
   lastDreamClass.insertAdjacentHTML(
     "beforebegin",
     `<figure class="card dream-2">
+      <button class="button-reset">Reset</button>
       <div class="card-img-wrapper">
         <img src="./images/programming.jpg" 
           class="card-img" 
@@ -39,7 +40,19 @@ export function addNewDreamHandler() {
   input.onkeydown = inputHandler;
 }
 
-export function inputHandler(event) {
+function deleteDream(event, index) {
+  // get reset button, delete it with parent Element, delete localStorage record with index
+  console.log("delete");
+  const { target: button } = event;
+  button.parentNode.remove();
+  button.remove();
+  const currentItems = JSON.parse(localStorage.getItem("dreams"));
+  localStorage.removeItem("dreams");
+  currentItems.splice(index, 1);
+  localStorage.setItem("dreams", JSON.stringify([...currentItems]));
+}
+
+function inputHandler(event) {
   const { target: input } = event;
   const inputValue = input.value;
   if (event.key === "Enter") {
@@ -51,6 +64,9 @@ export function inputHandler(event) {
       `<figcaption> ${inputValue}</ figcaption>`
     );
     input.remove();
+    document.querySelectorAll(".button-reset").forEach((element, i) => {
+      element.onclick = (event) => deleteDream(event, i);
+    });
   }
   if (event.key === "Escape") {
     input.parentNode.parentNode.remove();
@@ -119,6 +135,7 @@ function showDreams(root, array) {
     .map(
       (e) => `
   <figure class="card dream-2">
+    <button class="button-reset">Reset</button>
     <div class="card-img-wrapper">
       <img src="./images/programming.jpg" 
            alt="${e}"
@@ -132,7 +149,7 @@ function showDreams(root, array) {
     .join("");
   const btn = `<figure>
     <div class="card-img-wrapper">
-      <button><img src="./images/plus.png" 
+      <button id="add_button"><img src="./images/plus.png" 
           alt="Добавить" 
           class="card-img" 
       /> Добавить
@@ -141,7 +158,10 @@ function showDreams(root, array) {
     <figcaption class="card-description">Добавить</figcaption>
   </figure>`;
   root.insertAdjacentHTML("afterbegin", formatedPreviousRecords + btn);
-  const button = root.querySelector("button");
+  const button = document.getElementById("add_button");
+  document.querySelectorAll(".button-reset").forEach((element, i) => {
+    element.onclick = (event) => deleteDream(event, i);
+  });
   button.onclick = addNewDreamHandler;
 }
 
