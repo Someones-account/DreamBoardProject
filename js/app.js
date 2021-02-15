@@ -43,9 +43,82 @@ function addNewDreamHandler() {
   }
 }
 
+function deleteYearSalary(event, i) {
+  const { target: button } = event;
+  button.parentNode.remove();
+  const salaries = JSON.parse(localStorage.getItem("salaries"));
+  delete salaries[i];
+  localStorage.setItem("salaries", JSON.stringify(salaries));
+  showPlot(JSON.parse(localStorage.getItem("salaries")));
+}
+
+function addYearSalary(event) {
+  const { target: button } = event;
+  button.insertAdjacentHTML(
+    "beforebegin",
+    `
+  <li> <input type="text"> <button>Delete</button>
+  <div class="card-img-wrapper">
+    <img src="./images/trashcan.png" 
+            class="card-img" 
+          />
+  </div></li>
+  `
+  );
+  document
+    .getElementById("salariesList")
+    .querySelectorAll("input")
+    .forEach((element, i) => {
+      element.onkeydown = (event) => refreshSalaryTable(event, i);
+    });
+}
+
+function editSalary(event) {
+  const currentSalaries = JSON.parse(localStorage.getItem("salaries")) || [];
+  const listElement = document.getElementById("salariesList");
+  if (listElement) {
+    listElement.remove();
+  } else {
+    var salariesByYears = currentSalaries
+      .map(
+        (e) => `
+  <li><input type="text" value=${e}> 
+  <button id="deleteSalary">Delete</button> </li>`
+      )
+      .join("");
+    event.target.insertAdjacentHTML(
+      "afterend",
+      `<ul id="salariesList">
+            ${salariesByYears}
+            <li> <button id="addYearSalary"> Add </button>
+        </ul>`
+    );
+    const listElement = document.getElementById("salariesList");
+    document.getElementById("addYearSalary").onclick = addYearSalary;
+    listElement.querySelectorAll("input").forEach((element, i) => {
+      element.onkeydown = (event) => refreshSalaryTable(event, i);
+    });
+    const buttons = listElement.querySelectorAll("button");
+    buttons.forEach((element, i) => {
+      element.onclick = (event) => deleteYearSalary(event, i);
+    });
+  }
+}
+
+function refreshSalaryTable(event, index) {
+  const { target: input } = event;
+  const inputValue = input.value;
+  if (event.key === "Enter") {
+    const currentSalaries = JSON.parse(localStorage.getItem("salaries")) || [];
+    currentSalaries[index] = inputValue;
+    const jsonItem = JSON.stringify(currentSalaries);
+    localStorage.setItem("salaries", jsonItem);
+    refs.plot1.innerHTML = showPlot(currentSalaries);
+  }
+}
+
 function deleteDream(event, index) {
   // get reset button, delete it with parent Element, delete localStorage record with index
-  console.log("delete");
   const { target: button } = event;
   button.parentNode.remove();
   button.remove();
@@ -85,14 +158,15 @@ function showPlot(array) {
       (e) => `
   <li class="plot-item" 
       style="height: ${e * scalingFactor}px" 
-      title="${e}">
+      title="${e}"
   </li> 
   `
     )
     .join("");
 }
 
-const stringHTML1 = showPlot(arr);
+const salaries = JSON.parse(localStorage.getItem("salaries")) || [];
+const stringHTML1 = showPlot(salaries);
 
 // filter
 
@@ -101,7 +175,7 @@ function isOverNecessaryExpenses(value) {
   return value > necessaryExpenses;
 }
 
-const over = arr.filter(isOverNecessaryExpenses);
+const over = salaries.filter(isOverNecessaryExpenses);
 
 function save(element) {
   return element - necessaryExpenses;
@@ -191,13 +265,15 @@ function showTODO(ref, array) {
   ref.insertAdjacentHTML("afterbegin", todos);
 }
 
+const editSalaryButton = `<button id="edit-salary"> Edit
+   </button>`;
+
 function run() {
   refs.plot1.insertAdjacentHTML("afterbegin", stringHTML1);
-  refs.plot1.insertAdjacentHTML(
-    "beforeend",
-    `<button>
-   </button>`
-  );
+  document
+    .querySelector(".card-description")
+    .insertAdjacentHTML("beforeend", editSalaryButton);
+  document.getElementById("edit-salary").onclick = editSalary;
   refs.plot2.insertAdjacentHTML("afterbegin", stringHTML2);
   refs.plot3.insertAdjacentHTML("afterbegin", stringHTML3);
   showPerson(refs, user);

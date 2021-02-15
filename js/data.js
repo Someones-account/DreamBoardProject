@@ -24,7 +24,7 @@ const arr = [
   3300,
 ];
 
-const necessaryExpenses = 900;
+const necessaryExpenses = 5;
 
 const todo = [
   { month: "Червень", skill: "JavaScript" },
